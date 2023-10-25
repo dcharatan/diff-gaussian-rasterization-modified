@@ -32,32 +32,32 @@ __device__ glm::vec3 computeColorFromSH(int idx, int deg, int max_coeffs, const 
 	if (deg > 0)
 	{
 		// The XYZ assignments have been modified to match e3nn's format.
-		float x = dir.z;
-		float y = dir.x;
-		float z = dir.y;
-		result = result - SH_C1 * y * sh[1] + SH_C1 * z * sh[2] - SH_C1 * x * sh[3];
+		float x = dir.x;
+		float y = dir.y;
+		float z = dir.z;
+		result = result - SH_C1 * x * sh[1] + SH_C1 * y * sh[2] - SH_C1 * z * sh[3];
 
 		if (deg > 1)
 		{
-			float xx = x * x, yy = y * y, zz = z * z;
-			float xy = x * y, yz = y * z, xz = x * z;
+			float zz = z * z, xx = x * x, yy = y * y;
+			float zx = z * x, xy = x * y, zy = z * y;
 			result = result +
-				SH_C2[0] * xy * sh[4] +
-				SH_C2[1] * yz * sh[5] +
-				SH_C2[2] * (2.0f * zz - xx - yy) * sh[6] +
-				SH_C2[3] * xz * sh[7] +
-				SH_C2[4] * (xx - yy) * sh[8];
+				SH_C2[0] * zx * sh[4] +
+				SH_C2[1] * xy * sh[5] +
+				SH_C2[2] * (2.0f * yy - zz - xx) * sh[6] +
+				SH_C2[3] * zy * sh[7] +
+				SH_C2[4] * (zz - xx) * sh[8];
 
 			if (deg > 2)
 			{
 				result = result +
-					SH_C3[0] * y * (3.0f * xx - yy) * sh[9] +
-					SH_C3[1] * xy * z * sh[10] +
-					SH_C3[2] * y * (4.0f * zz - xx - yy) * sh[11] +
-					SH_C3[3] * z * (2.0f * zz - 3.0f * xx - 3.0f * yy) * sh[12] +
-					SH_C3[4] * x * (4.0f * zz - xx - yy) * sh[13] +
-					SH_C3[5] * z * (xx - yy) * sh[14] +
-					SH_C3[6] * x * (xx - 3.0f * yy) * sh[15];
+					SH_C3[0] * x * (3.0f * zz - xx) * sh[9] +
+					SH_C3[1] * zx * y * sh[10] +
+					SH_C3[2] * x * (4.0f * yy - zz - xx) * sh[11] +
+					SH_C3[3] * y * (2.0f * yy - 3.0f * zz - 3.0f * xx) * sh[12] +
+					SH_C3[4] * z * (4.0f * yy - zz - xx) * sh[13] +
+					SH_C3[5] * z * (zz - xx) * sh[14] +
+					SH_C3[6] * z * (zz - 3.0f * xx) * sh[15];
 			}
 		}
 	}
