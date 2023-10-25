@@ -36,9 +36,9 @@ __device__ void computeColorFromSH(int idx, int deg, int max_coeffs, const glm::
 	glm::vec3 dRGBdz(0, 0, 0);
 	glm::vec3 dRGBdx(0, 0, 0);
 	glm::vec3 dRGBdy(0, 0, 0);
-	float x = dir.z;
-	float y = dir.x;
-	float z = dir.y;
+	float x = dir.x;
+	float y = dir.y;
+	float z = dir.z;
 
 	// Target location for this Gaussian to write SH gradients to
 	glm::vec3* dL_dsh = dL_dshs + idx * max_coeffs;
@@ -48,46 +48,46 @@ __device__ void computeColorFromSH(int idx, int deg, int max_coeffs, const glm::
 	dL_dsh[0] = dRGBdsh0 * dL_dRGB;
 	if (deg > 0)
 	{
-		float dRGBdsh1 = -SH_C1 * y;
-		float dRGBdsh2 = SH_C1 * z;
-		float dRGBdsh3 = -SH_C1 * x;
+		float dRGBdsh1 = -SH_C1 * x;
+		float dRGBdsh2 = SH_C1 * y;
+		float dRGBdsh3 = -SH_C1 * z;
 		dL_dsh[1] = dRGBdsh1 * dL_dRGB;
 		dL_dsh[2] = dRGBdsh2 * dL_dRGB;
 		dL_dsh[3] = dRGBdsh3 * dL_dRGB;
 
-		dRGBdz = -SH_C1 * sh[3];
 		dRGBdx = -SH_C1 * sh[1];
 		dRGBdy = SH_C1 * sh[2];
+		dRGBdz = -SH_C1 * sh[3];
 
 		if (deg > 1)
 		{
-			float xx = x * x, yy = y * y, zz = z * z;
-			float xy = x * y, yz = y * z, xz = x * z;
+			float zz = z * z, xx = x * x, yy = y * y;
+			float zx = z * x, xy = x * y, zy = z * y;
 
-			float dRGBdsh4 = SH_C2[0] * xy;
-			float dRGBdsh5 = SH_C2[1] * yz;
-			float dRGBdsh6 = SH_C2[2] * (2.f * zz - xx - yy);
-			float dRGBdsh7 = SH_C2[3] * xz;
-			float dRGBdsh8 = SH_C2[4] * (xx - yy);
+			float dRGBdsh4 = SH_C2[0] * zx;
+			float dRGBdsh5 = SH_C2[1] * xy;
+			float dRGBdsh6 = SH_C2[2] * (2.f * yy - zz - xx);
+			float dRGBdsh7 = SH_C2[3] * zy;
+			float dRGBdsh8 = SH_C2[4] * (zz - xx);
 			dL_dsh[4] = dRGBdsh4 * dL_dRGB;
 			dL_dsh[5] = dRGBdsh5 * dL_dRGB;
 			dL_dsh[6] = dRGBdsh6 * dL_dRGB;
 			dL_dsh[7] = dRGBdsh7 * dL_dRGB;
 			dL_dsh[8] = dRGBdsh8 * dL_dRGB;
 
-			dRGBdz += SH_C2[0] * y * sh[4] + SH_C2[2] * 2.f * -x * sh[6] + SH_C2[3] * z * sh[7] + SH_C2[4] * 2.f * x * sh[8];
-			dRGBdx += SH_C2[0] * x * sh[4] + SH_C2[1] * z * sh[5] + SH_C2[2] * 2.f * -y * sh[6] + SH_C2[4] * 2.f * -y * sh[8];
-			dRGBdy += SH_C2[1] * y * sh[5] + SH_C2[2] * 2.f * 2.f * z * sh[6] + SH_C2[3] * x * sh[7];
+			dRGBdz += SH_C2[0] * x * sh[4] + SH_C2[2] * 2.f * -z * sh[6] + SH_C2[3] * y * sh[7] + SH_C2[4] * 2.f * z * sh[8];
+			dRGBdx += SH_C2[0] * z * sh[4] + SH_C2[1] * y * sh[5] + SH_C2[2] * 2.f * -x * sh[6] + SH_C2[4] * 2.f * -x * sh[8];
+			dRGBdy += SH_C2[1] * x * sh[5] + SH_C2[2] * 2.f * 2.f * y * sh[6] + SH_C2[3] * z * sh[7];
 
 			if (deg > 2)
 			{
-				float dRGBdsh9 = SH_C3[0] * y * (3.f * xx - yy);
-				float dRGBdsh10 = SH_C3[1] * xy * z;
-				float dRGBdsh11 = SH_C3[2] * y * (4.f * zz - xx - yy);
-				float dRGBdsh12 = SH_C3[3] * z * (2.f * zz - 3.f * xx - 3.f * yy);
-				float dRGBdsh13 = SH_C3[4] * x * (4.f * zz - xx - yy);
-				float dRGBdsh14 = SH_C3[5] * z * (xx - yy);
-				float dRGBdsh15 = SH_C3[6] * x * (xx - 3.f * yy);
+				float dRGBdsh9 = SH_C3[0] * x * (3.f * zz - xx);
+				float dRGBdsh10 = SH_C3[1] * zx * y;
+				float dRGBdsh11 = SH_C3[2] * x * (4.f * yy - zz - xx);
+				float dRGBdsh12 = SH_C3[3] * y * (2.f * yy - 3.f * zz - 3.f * xx);
+				float dRGBdsh13 = SH_C3[4] * z * (4.f * yy - zz - xx);
+				float dRGBdsh14 = SH_C3[5] * y * (zz - xx);
+				float dRGBdsh15 = SH_C3[6] * z * (zz - 3.f * xx);
 				dL_dsh[9] = dRGBdsh9 * dL_dRGB;
 				dL_dsh[10] = dRGBdsh10 * dL_dRGB;
 				dL_dsh[11] = dRGBdsh11 * dL_dRGB;
@@ -97,29 +97,29 @@ __device__ void computeColorFromSH(int idx, int deg, int max_coeffs, const glm::
 				dL_dsh[15] = dRGBdsh15 * dL_dRGB;
 
 				dRGBdz += (
-					SH_C3[0] * sh[9] * 3.f * 2.f * xy +
-					SH_C3[1] * sh[10] * yz +
-					SH_C3[2] * sh[11] * -2.f * xy +
-					SH_C3[3] * sh[12] * -3.f * 2.f * xz +
-					SH_C3[4] * sh[13] * (-3.f * xx + 4.f * zz - yy) +
-					SH_C3[5] * sh[14] * 2.f * xz +
-					SH_C3[6] * sh[15] * 3.f * (xx - yy));
+					SH_C3[0] * sh[9] * 3.f * 2.f * zx +
+					SH_C3[1] * sh[10] * xy +
+					SH_C3[2] * sh[11] * -2.f * zx +
+					SH_C3[3] * sh[12] * -3.f * 2.f * zy +
+					SH_C3[4] * sh[13] * (-3.f * zz + 4.f * yy - xx) +
+					SH_C3[5] * sh[14] * 2.f * zy +
+					SH_C3[6] * sh[15] * 3.f * (zz - xx));
 
 				dRGBdx += (
-					SH_C3[0] * sh[9] * 3.f * (xx - yy) +
-					SH_C3[1] * sh[10] * xz +
-					SH_C3[2] * sh[11] * (-3.f * yy + 4.f * zz - xx) +
-					SH_C3[3] * sh[12] * -3.f * 2.f * yz +
-					SH_C3[4] * sh[13] * -2.f * xy +
-					SH_C3[5] * sh[14] * -2.f * yz +
-					SH_C3[6] * sh[15] * -3.f * 2.f * xy);
+					SH_C3[0] * sh[9] * 3.f * (zz - xx) +
+					SH_C3[1] * sh[10] * zy +
+					SH_C3[2] * sh[11] * (-3.f * xx + 4.f * yy - zz) +
+					SH_C3[3] * sh[12] * -3.f * 2.f * xy +
+					SH_C3[4] * sh[13] * -2.f * zx +
+					SH_C3[5] * sh[14] * -2.f * xy +
+					SH_C3[6] * sh[15] * -3.f * 2.f * zx);
 
 				dRGBdy += (
-					SH_C3[1] * sh[10] * xy +
-					SH_C3[2] * sh[11] * 4.f * 2.f * yz +
-					SH_C3[3] * sh[12] * 3.f * (2.f * zz - xx - yy) +
-					SH_C3[4] * sh[13] * 4.f * 2.f * xz +
-					SH_C3[5] * sh[14] * (xx - yy));
+					SH_C3[1] * sh[10] * zx +
+					SH_C3[2] * sh[11] * 4.f * 2.f * xy +
+					SH_C3[3] * sh[12] * 3.f * (2.f * yy - zz - xx) +
+					SH_C3[4] * sh[13] * 4.f * 2.f * zy +
+					SH_C3[5] * sh[14] * (zz - xx));
 			}
 		}
 	}
@@ -127,7 +127,7 @@ __device__ void computeColorFromSH(int idx, int deg, int max_coeffs, const glm::
 	// The view direction is an input to the computation. View direction
 	// is influenced by the Gaussian's mean, so SHs gradients
 	// must propagate back into 3D position.
-	glm::vec3 dL_ddir(glm::dot(dRGBdz, dL_dRGB), glm::dot(dRGBdx, dL_dRGB), glm::dot(dRGBdy, dL_dRGB));
+	glm::vec3 dL_ddir(glm::dot(dRGBdx, dL_dRGB), glm::dot(dRGBdy, dL_dRGB), glm::dot(dRGBdz, dL_dRGB));
 
 	// Account for normalization of direction
 	float3 dL_dmean = dnormvdv(float3{ dir_orig.x, dir_orig.y, dir_orig.z }, float3{ dL_ddir.x, dL_ddir.y, dL_ddir.z });
