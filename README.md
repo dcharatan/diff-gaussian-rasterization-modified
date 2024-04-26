@@ -2,6 +2,8 @@
 
 - Spherical harmonics match e3nn now.
 
+Also check out [this further modification](https://github.com/Chrixtar/latent-gaussian-rasterization) if you want to render features and depths.
+
 # Differential Gaussian Rasterization
 
 Used as the rasterization engine for the paper "3D Gaussian Splatting for Real-Time Rendering of Radiance Fields". If you can make use of it in your own research, please be so kind to cite us.
